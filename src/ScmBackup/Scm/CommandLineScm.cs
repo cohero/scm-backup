@@ -90,9 +90,9 @@ namespace ScmBackup.Scm
         /// If the folder doesn't exist or is not a repository, it's created first.
         /// Must be implemented in the child classes by calling ExecuteCommand and checking the result.
         /// </summary>
-        public void PullFromRemote(string remoteUrl, string directory)
+        public string PullFromRemote(string remoteUrl, string directory)
         {
-            this.PullFromRemote(remoteUrl, directory, null);
+            return this.PullFromRemote(remoteUrl, directory, null);
         }
 
         /// <summary>
@@ -100,13 +100,28 @@ namespace ScmBackup.Scm
         /// If the folder doesn't exist or is not a repository, it's created first.
         /// Must be implemented in the child classes by calling ExecuteCommand and checking the result.
         /// </summary>
-        public abstract void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials);
+        /// <param name="remoteUrl"></param>
+        /// <param name="directory"></param>
+        /// <param name="credentials"></param>
+        /// <returns>Output of command when success, else should throw.</returns>
+        public abstract string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials);
 
         /// <summary>
         /// Checks whether the repo in this directory contains a commit with this ID
         /// Must be implemented in the child classes by calling ExecuteCommand and checking the result.
         /// </summary>
         public abstract bool RepositoryContainsCommit(string directory, string commitid);
+
+        /// <summary>
+        /// Pushes to remote repository.
+        /// </summary>
+        /// <param name="remoteUrl">The HTTPS URL.</param>
+        /// <param name="directory">The subdir.</param>
+        /// <param name="credentials">The creds.</param>
+        /// <returns>
+        /// Output of successful command. Failed command should throw.
+        /// </returns>
+        public abstract string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials);
 
         /// <summary>
         /// Gets the file to execute

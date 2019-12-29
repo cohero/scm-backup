@@ -97,7 +97,7 @@ namespace ScmBackup.Scm
             return result.Successful;
         }
 
-        public override void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
+        public override string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
             if (!this.DirectoryIsRepository(directory))
             {
@@ -123,6 +123,8 @@ namespace ScmBackup.Scm
             {
                 throw new InvalidOperationException(result.Output);
             }
+
+            return result.Output;
         }
 
         public override bool RepositoryContainsCommit(string directory, string commitid)
@@ -146,6 +148,31 @@ namespace ScmBackup.Scm
             }
 
             return false;
+        }
+
+        public override string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials)
+        {
+            remoteUrl = this.RemoveCredentialsFromUrl(remoteUrl, credentials);
+
+            if (!this.DirectoryIsRepository(directory))
+            {
+                throw new InvalidOperationException($"Source directory [{directory}] for Push command is not a repository. Unable to push code to [{remoteUrl}]");
+            }
+
+            string cmd = string.Format("push {0} --force -R \"{1}\"", remoteUrl, directory);
+            if (credentials != null)
+            {
+                cmd += this.CreateParametersWithCredentials(credentials, remoteUrl);
+            }
+
+            var result = this.ExecuteCommand(cmd);
+
+            if (!result.Successful && !result.Output.Contains("no changes found"))
+            {
+                throw new InvalidOperationException(result.Output);
+            }
+
+            return result.Output;
         }
 
         private string RemoveCredentialsFromUrl(string url, ScmCredentials credentials)

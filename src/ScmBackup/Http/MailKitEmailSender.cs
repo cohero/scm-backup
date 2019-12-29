@@ -14,7 +14,7 @@ namespace ScmBackup.Http
 
         public void Send(string subject, string body)
         {
-            var config = this.context.Config.Email;
+            var config = this.context.Config?.Email;
 
             if (config == null)
             {

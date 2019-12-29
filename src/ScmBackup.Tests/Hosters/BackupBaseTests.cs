@@ -3,6 +3,8 @@ using Xunit;
 
 namespace ScmBackup.Tests.Hosters
 {
+    using System.Linq;
+
     public class BackupBaseTests
     {
         [Fact]
@@ -12,8 +14,14 @@ namespace ScmBackup.Tests.Hosters
             repo.SetWiki(true, "http://wiki");
             repo.SetIssues(true, "http://issues");
 
+            var reader = new FakeConfigReader();
+            reader.SetDefaultFakeConfig();
+
+            var context = new Context(reader);
+            var logger = new FakeLogger();
+
             var sut = new FakeHosterBackup();
-            sut.MakeBackup(new ConfigSource(), repo, @"c:\foo");
+            sut.MakeBackup(new ConfigSource(), repo, @"c:\foo", context, logger);
 
             Assert.True(sut.WasExecuted);
         }

@@ -14,9 +14,12 @@ namespace ScmBackup.Hosters.Bitbucket
 
         public override void BackupRepo(string subdir, ScmCredentials credentials)
         {
+            this.logger.Log(ErrorLevel.Info, $"    Backing up repo...");
+
             this.InitScm();
 
-            this.scm.PullFromRemote(this.repo.CloneUrl, subdir, credentials);
+            var output = this.scm.PullFromRemote(this.repo.CloneUrl, subdir, credentials);
+            this.logger.LogCmdOutput(output);
 
             if (!this.scm.DirectoryIsRepository(subdir))
             {
@@ -26,9 +29,12 @@ namespace ScmBackup.Hosters.Bitbucket
 
         public override void BackupWiki(string subdir, ScmCredentials credentials)
         {
+            this.logger.Log(ErrorLevel.Info, $"    Backing up wiki...");
+
             this.InitScm();
 
-            this.scm.PullFromRemote(this.repo.WikiUrl, subdir, credentials);
+            var output = this.scm.PullFromRemote(this.repo.WikiUrl, subdir, credentials);
+            this.logger.LogCmdOutput(output);
 
             if (!this.scm.DirectoryIsRepository(subdir))
             {

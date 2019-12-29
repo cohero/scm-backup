@@ -39,14 +39,16 @@ namespace ScmBackup.Scm
 
                 if (onComputer)
                 {
-                    this.logger.Log(ErrorLevel.Info, Resource.ScmOnThisComputer, scm.DisplayName + " "  + scm.GetVersionNumber());
+                    this.logger.Log(ErrorLevel.Info, $"  FOUND: {scm.DisplayName} v{scm.GetVersionNumber()}");
                 }
                 else
                 {
-                    this.logger.Log(ErrorLevel.Error, Resource.ScmNotOnThisComputer, scm.DisplayName);
+                    this.logger.Log(ErrorLevel.Error, $"  {scm.DisplayName} NOT FOUND");
                     ok = false;
                 }
             }
+
+            this.logger.Log(ErrorLevel.Info, string.Empty);
 
             return ok;
         }

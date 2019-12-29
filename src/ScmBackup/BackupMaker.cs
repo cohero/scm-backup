@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace ScmBackup
 {
+    using System;
+
     /// <summary>
     /// Backs up all repositories from a single source
     /// </summary>
@@ -30,13 +32,29 @@ namespace ScmBackup
 
             var url = new UrlHelper();
 
+            var errorCounter = 0;
+
             foreach (var repo in repos)
             {
-                string repoFolder = this.fileHelper.CreateSubDirectory(sourceFolder, repo.FullName);
+                //counter++;
+                try
+                {
+                    string repoFolder = this.fileHelper.CreateSubDirectory(sourceFolder, repo.FullName);
 
-                this.logger.Log(ErrorLevel.Info, Resource.BackupMaker_Repo, repo.Scm.ToString(), url.RemoveCredentialsFromUrl(repo.CloneUrl));
+                    this.logger.Log(ErrorLevel.Info, Resource.BackupMaker_Repo, repo.Scm.ToString(), url.RemoveCredentialsFromUrl(repo.CloneUrl));
 
-                this.backupMaker.MakeBackup(source, repo, repoFolder);
+                    this.backupMaker.MakeBackup(source, repo, repoFolder, this.context, this.logger);
+                }
+                catch (Exception ex)
+                {
+                    errorCounter++;
+                    this.logger.Log(ErrorLevel.Error, ex, $"    **** Failed backing up repo {repo.FullName}. Continuing with other repos. ****");
+                }
+            }
+
+            if (errorCounter > 0)
+            {
+                throw new Exception($"Backup completed with ({errorCounter}) errors. See log above for details. Completed as many repo backups as possible.");
             }
         }
     }

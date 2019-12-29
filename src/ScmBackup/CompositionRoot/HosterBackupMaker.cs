@@ -15,7 +15,7 @@ namespace ScmBackup.CompositionRoot
             this.factory = factory;
         }
 
-        public void MakeBackup(ConfigSource source, HosterRepository repo, string repoFolder)
+        public void MakeBackup(ConfigSource source, HosterRepository repo, string repoFolder, IContext context, ILogger logger)
         {
             if (source == null)
             {
@@ -23,7 +23,7 @@ namespace ScmBackup.CompositionRoot
             }
 
             var hoster = factory.Create(source.Hoster);
-            hoster.Backup.MakeBackup(source, repo, repoFolder);
+            hoster.Backup.MakeBackup(source, repo, repoFolder, context, logger);
         }
     }
 }

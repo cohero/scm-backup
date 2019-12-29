@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyVersion("0.0.0")]
-[assembly: AssemblyFileVersion("0.0.0")]
-[assembly: AssemblyInformationalVersion("0.0.0-DEV")]
+[assembly: AssemblyVersion("1.2.2")]
+[assembly: AssemblyFileVersion("1.2.2")]
+[assembly: AssemblyInformationalVersion("1.2.2-Cohero")]
 [assembly: AssemblyTitle("SCM Backup")]
-[assembly: AssemblyDescription("Backup repositories from cloud hosters to your local machine")]
+[assembly: AssemblyDescription("Cohero Custom version - Backup repositories from cloud hosters to your local machine")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("scm-backup.org")]
+[assembly: AssemblyCompany("scm-backup.org and Cohero")]
 [assembly: AssemblyProduct("SCM Backup")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

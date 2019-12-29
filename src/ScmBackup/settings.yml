@@ -1,22 +1,50 @@
 ﻿# all backups go here
-localFolder: 'c:\scm-backup'
+#localFolder: '\\coheronas\coherobu\bitbucket'
+localFolder: 'D:\ScmBackupTemp'
 
 # when an error occurs, wait that many seconds before exiting the application
-waitSecondsOnError: 5
+waitSecondsOnError: 15
+
+scms:
+  - name: git
+    path: 'C:\Program Files\Git\bin\git.exe'
+
+  - name: mercurial
+    path: 'C:\Program Files\TortoiseHg\hg.exe'
+
 
 # uncomment this to send SCM Backup's console output via email
-#email:
-#  from: from@example.com
-#  to: to@example.com
-#  server: smtp.example.com
-#  port: 0
-#  useSsl: false
-#  userName: testuser
-#  password: not-the-real-password
+email:
+  from: scm-backup@notifications.cohero.com
+  to: bard@cohero.com
+  server: smtp.mailgun.org
+  port: 465
+  useSsl: true
+  userName: postmaster@notifications.cohero.com
+  password: 705b90038bb7378e7666cedb11a05105
 
 sources:
+  - title:  cohero_bitbucket
+    pushCopyToTitle: cohero_xpdev
+    hoster: bitbucket
+    type: org
+    name: cohero
+    authName: bard
+    password: eCaFjE593n9zZEDtZQzD
 
-  - title:  github_singleuser
-    hoster: github
+  - title: cohero_xpdev
+    hoster: xpdev
     type: user
-    name: scm-backup-testuser
+    name: cohero
+    apiKey: 8cd3440de3038789a0a1a7a8e5d4437f
+    authName: cohero
+    password: Wf4Ch-Y_m*Hyj*Rid7PN
+
+
+#  - title:  cohero_github
+#    hoster: github
+#    type: user
+#    name: cohero
+#    authName: bard@cohero.com
+#    password: e761996350534fc88fb20a226b7123c42c016010
+

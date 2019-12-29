@@ -23,8 +23,11 @@ namespace ScmBackup.Tests.Hosters
             var config = reader.ReadConfig();
             var source = config.Sources.First();
 
+            var context = new Context(reader);
+            var logger = new FakeLogger(); 
+
             var sut = new HosterBackupMaker(factory);
-            sut.MakeBackup(source, repo, "foo");
+            sut.MakeBackup(source, repo, "foo", context, logger);
 
             Assert.True(hoster.FakeBackup.WasExecuted);
         }
@@ -35,8 +38,14 @@ namespace ScmBackup.Tests.Hosters
             var factory = new FakeHosterFactory(new FakeHoster());
             var repo = new HosterRepository("foo", "foo", "http://clone", ScmType.Git);
 
+            var reader = new FakeConfigReader();
+            reader.SetDefaultFakeConfig();
+            var context = new Context(reader);
+            var logger = new FakeLogger();
+
+
             var sut = new HosterBackupMaker(factory);
-            Assert.Throws<ArgumentNullException>(() => sut.MakeBackup(null, repo, "foo"));
+            Assert.Throws<ArgumentNullException>(() => sut.MakeBackup(null, repo, "foo", context, logger));
         }
     }
 }

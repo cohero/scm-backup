@@ -37,6 +37,8 @@ namespace ScmBackup.Tests.Integration.Hosters
 
             var context = new FakeContext();
             context.Config = config;
+            this.context = context;
+            this.logger = new FakeLogger();
 
             var factory = new FakeScmFactory();
             factory.Register(ScmType.Git, new GitScm(new FileSystemHelper(), context));

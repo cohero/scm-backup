@@ -1,72 +1,70 @@
-﻿using System;
-using System.IO;
+﻿#region Copyright and License
+
+//  --------------------------------------------------------------------------------------------------------------------
+//  <copyright company="Cohero" file="GitScm.cs" >
+//    Copyright © Cohero.  All rights reserved.
+//  </copyright>
+//  <summary>
+//    Licensing and use of this code is subject to Cohero software license agreement terms.
+//    For additional information, contact Cohero at (858) 777-1983 or info@cohero.com
+//  </summary>
+//  --------------------------------------------------------------------------------------------------------------------
+
+#endregion
 
 namespace ScmBackup.Scm
 {
+    using System;
+    using System.IO;
+
     [Scm(Type = ScmType.Git)]
     internal class GitScm : CommandLineScm, IScm
     {
+        #region Constructors and Destructors
+
         public GitScm(IFileSystemHelper filesystemhelper, IContext context)
         {
             this.FileSystemHelper = filesystemhelper;
             this.context = context;
         }
 
+        #endregion
+
+        #region Public Properties
+
+        public override string DisplayName
+        {
+            get
+            {
+                return "Git";
+            }
+        }
+
         public IFileSystemHelper FileSystemHelper { get; set; }
 
         public override string ShortName
         {
-            get { return "git"; }
+            get
+            {
+                return "git";
+            }
         }
 
-        public override string DisplayName
-        {
-            get { return "Git"; }
-        }
+        #endregion
+
+        #region Non-Public Properties
 
         protected override string CommandName
         {
-            get { return "git"; }
-        }
-
-        public override bool IsOnThisComputer()
-        {
-            var result = this.ExecuteCommand("--version");
-
-            if (result.Successful && result.StandardOutput.ToLower().Contains("git version"))
+            get
             {
-                return true;
+                return "git";
             }
-
-            return false;
         }
 
-        public override string GetVersionNumber()
-        {
-            var result = this.ExecuteCommand("--version");
+        #endregion
 
-            if (result.Successful)
-            {
-                const string search = "git version ";
-                return result.StandardOutput.Substring(result.StandardOutput.IndexOf(search) + search.Length).Replace("\n", "");
-            }
-
-            throw new InvalidOperationException(result.Output);
-        }
-
-        public override bool DirectoryIsRepository(string directory)
-        {
-            // SCM Backup uses bare repos only, so we don't need to check for non-bare repos at all
-            string cmd = string.Format("-C \"{0}\" rev-parse --is-bare-repository", directory);
-            var result = this.ExecuteCommand(cmd);
-
-            if (result.Successful && result.StandardOutput.ToLower().StartsWith("true"))
-            {
-                return true;
-            }
-
-            return false;
-        }
+        #region Public Methods
 
         public override void CreateRepository(string directory)
         {
@@ -82,6 +80,84 @@ namespace ScmBackup.Scm
             }
         }
 
+        public string CreateRepoUrlWithCredentials(string url, ScmCredentials credentials)
+        {
+            // https://stackoverflow.com/a/10054470/6884
+            var uri = new UriBuilder(url);
+            uri.UserName = credentials.User;
+            uri.Password = credentials.Password;
+            return uri.ToString();
+        }
+
+        public override bool DirectoryIsRepository(string directory)
+        {
+            // SCM Backup uses bare repos only, so we don't need to check for non-bare repos at all
+            string cmd = string.Format("-C \"{0}\" rev-parse --is-bare-repository", directory);
+            var result = this.ExecuteCommand(cmd);
+
+            if (result.Successful && result.StandardOutput.ToLower().StartsWith("true"))
+            {
+                // Disable credentials helper so that we can pass credentials with URL without prompting
+                this.DisableCredentialHelperForCurrentRepo(directory);
+                return true;
+            }
+
+            return false;
+        }
+
+        public override string GetVersionNumber()
+        {
+            var result = this.ExecuteCommand("--version");
+
+            if (result.Successful)
+            {
+                const string search = "git version ";
+                return result.StandardOutput.Substring(result.StandardOutput.IndexOf(search) + search.Length).Replace("\n", string.Empty);
+            }
+
+            throw new InvalidOperationException(result.Output);
+        }
+
+        public override bool IsOnThisComputer()
+        {
+            var result = this.ExecuteCommand("--version");
+
+            if (result.Successful && result.StandardOutput.ToLower().Contains("git version"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public override string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
+        {
+            if (!this.DirectoryIsRepository(directory))
+            {
+                if (Directory.Exists(directory) && !this.FileSystemHelper.DirectoryIsEmpty(directory))
+                {
+                    throw new InvalidOperationException(string.Format(Resource.ScmTargetDirectoryNotEmpty, directory));
+                }
+
+                this.CreateRepository(directory);
+            }
+
+            if (credentials != null)
+            {
+                remoteUrl = this.CreateRepoUrlWithCredentials(remoteUrl, credentials);
+            }
+
+            string cmd = string.Format("-C \"{0}\" fetch --force --prune {1} refs/heads/*:refs/heads/* refs/tags/*:refs/tags/*", directory, remoteUrl);
+            var result = this.ExecuteCommand(cmd);
+
+            if (!result.Successful)
+            {
+                throw new InvalidOperationException(result.Output);
+            }
+
+            return result.Output;
+        }
+
         public override bool RemoteRepositoryExists(string remoteUrl, ScmCredentials credentials)
         {
             if (credentials != null)
@@ -93,32 +169,6 @@ namespace ScmBackup.Scm
             var result = this.ExecuteCommand(cmd);
 
             return result.Successful;
-        }
-
-        public override void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
-        {
-            if (!this.DirectoryIsRepository(directory))
-            {
-                if (Directory.Exists(directory) && !this.FileSystemHelper.DirectoryIsEmpty(directory))
-                {
-                    throw new InvalidOperationException(string.Format(Resource.ScmTargetDirectoryNotEmpty, directory));
-                }
-                
-                this.CreateRepository(directory);
-            }
-
-            if (credentials != null)
-            {
-                remoteUrl = this.CreateRepoUrlWithCredentials(remoteUrl, credentials);
-            }
-            
-            string cmd = string.Format("-C \"{0}\" fetch --force --prune {1} refs/heads/*:refs/heads/* refs/tags/*:refs/tags/*", directory, remoteUrl);
-            var result = this.ExecuteCommand(cmd);
-
-            if (!result.Successful)
-            {
-                throw new InvalidOperationException(result.Output);
-            }
         }
 
         public override bool RepositoryContainsCommit(string directory, string commitid)
@@ -145,13 +195,50 @@ namespace ScmBackup.Scm
             return false;
         }
 
-        public string CreateRepoUrlWithCredentials(string url, ScmCredentials credentials)
+        public override string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
-            // https://stackoverflow.com/a/10054470/6884
-            var uri = new UriBuilder(url);
-            uri.UserName = credentials.User;
-            uri.Password = credentials.Password;
-            return uri.ToString();
+            if (!this.DirectoryIsRepository(directory))
+            {
+                throw new InvalidOperationException($"Source directory [{directory}] for Push command is not a repository. Unable to push code to [{remoteUrl}]");
+            }
+
+            if (credentials != null)
+            {
+                remoteUrl = this.CreateRepoUrlWithCredentials(remoteUrl, credentials);
+            }
+
+            string cmd = string.Format("-C \"{0}\" push --force {1} refs/heads/*:refs/heads/* refs/tags/*:refs/tags/*", directory, remoteUrl);
+            var result = this.ExecuteCommand(cmd);
+
+            // TODO may have to add to IF below to look for output contains something like 'no changes' when there is nothing to push - which is not successful but should not throw an error.
+            if (!result.Successful)
+            {
+                throw new InvalidOperationException(result.Output);
+            }
+
+            return result.Output;
         }
+
+        #endregion
+
+        #region Non-Public Methods
+
+        /// <summary>
+        /// Disables the credential helper for current repo. The change should be stored in the local config for the repo
+        /// and should only apply to this repo.
+        /// </summary>
+        /// <param name="directory">The directory.</param>
+        /// <exception cref="InvalidOperationException"></exception>
+        private void DisableCredentialHelperForCurrentRepo(string directory)
+        {
+            //var cmd = $"-C \"{directory}\" config --local --unset credential.helper";
+            //var result = this.ExecuteCommand(cmd);
+            //if (!result.Successful)
+            //{
+            //    throw new InvalidOperationException(result.Output);
+            //}
+        }
+
+        #endregion
     }
 }

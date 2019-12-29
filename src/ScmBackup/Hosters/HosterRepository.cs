@@ -24,14 +24,43 @@
         }
 
         /// <summary>
-        /// Full name of the repository (e.g. "username/reponame")
+        /// Full name of the repository (e.g. "username/reponame") - NOTE that slashes will be replaced with pound so they can be part of a directory name
         /// </summary>
         public string FullName { get; private set; }
 
         /// <summary>
-        /// "short name" of the repository (e.g. "reponame")
+        /// "short name" or abbreviated name of the repository (e.g. 'abbreviatedName' from xp-dev or 'slug' from bitbucket) - with spaces or special chars removed - suitable for a URL
         /// </summary>
         public string ShortName { get; private set; }
+
+        /// <summary>
+        /// Display name of the repository (e.g. "reponame") with any spaces or special chars
+        /// </summary>
+        public string Name { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
+        /// <value>
+        /// The description.
+        /// </value>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of code language contained in the repo.
+        /// </summary>
+        /// <value>
+        /// The language.
+        /// </value>
+        public string Language { get; set; }
+
+        /// <summary>
+        /// Gets or sets the size of the repository.
+        /// </summary>
+        /// <value>
+        /// The size.
+        /// </value>
+        public long Size { get; set; }
 
         /// <summary>
         /// URL to clone the repository

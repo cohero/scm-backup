@@ -31,6 +31,9 @@ namespace ScmBackup.Tests.Integration.Hosters
 
             var context = new FakeContext();
             context.Config = config;
+            this.context = context;
+            this.logger = new FakeLogger();
+            
 
             var api = new BitbucketApi(new HttpRequest());
             var repoList = api.GetRepositoryList(this.source);

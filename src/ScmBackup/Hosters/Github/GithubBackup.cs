@@ -12,9 +12,12 @@ namespace ScmBackup.Hosters.Github
 
         public override void BackupRepo(string subdir, ScmCredentials credentials)
         {
+            this.logger.Log(ErrorLevel.Info, $"    Backing up repo...");
+
             InitScm();
 
-            scm.PullFromRemote(this.repo.CloneUrl, subdir, credentials);
+            var output = scm.PullFromRemote(this.repo.CloneUrl, subdir, credentials);
+            this.logger.LogCmdOutput(output);
 
             if (!scm.DirectoryIsRepository(subdir))
             {
@@ -24,9 +27,12 @@ namespace ScmBackup.Hosters.Github
 
         public override void BackupWiki(string subdir, ScmCredentials credentials)
         {
+            this.logger.Log(ErrorLevel.Info, $"    Backing up wiki...");
+
             InitScm();
 
-            scm.PullFromRemote(this.repo.WikiUrl, subdir, credentials);
+            var output = scm.PullFromRemote(this.repo.WikiUrl, subdir, credentials);
+            this.logger.LogCmdOutput(output);
 
             if (!scm.DirectoryIsRepository(subdir))
             {

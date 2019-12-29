@@ -65,17 +65,22 @@ namespace ScmBackup.Tests.Scm
             throw new NotImplementedException();
         }
 
-        public void PullFromRemote(string remoteUrl, string directory)
+        public string PullFromRemote(string remoteUrl, string directory)
         {
             throw new NotImplementedException();
         }
 
-        public void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
+        public string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
             throw new NotImplementedException();
         }
 
         public bool RepositoryContainsCommit(string directory, string commitid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
             throw new NotImplementedException();
         }

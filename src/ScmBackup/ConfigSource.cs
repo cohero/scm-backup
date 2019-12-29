@@ -15,6 +15,12 @@ namespace ScmBackup
         public string Title { get; set; }
 
         /// <summary>
+        /// Title another config source to push copy of the repo to. Title must exist in the setting.yml, and the source type
+        /// for the title must support pushing and support the same repo type (no repo hg to git etc. conversion.) Used to copy a repo from one hoster to another in addition to making a local backup.
+        /// </summary>
+        public string PushCopyToTitle { get; set; }
+
+        /// <summary>
         /// name of the hoster
         /// </summary>
         public string Hoster { get; set; }
@@ -28,6 +34,11 @@ namespace ScmBackup
         /// user name
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// ApiKey used by some Hosters to access API for repo list. (Currently only applies to Xp-Dev.com hoster.)
+        /// </summary>
+        public string ApiKey { get; set; }
 
         /// <summary>
         /// user name for authentication

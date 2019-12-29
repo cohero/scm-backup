@@ -40,7 +40,7 @@ namespace ScmBackup
             }
             catch (Exception ex)
             {
-                this.logger.Log(ErrorLevel.Error, ex.Message);
+                this.logger.Log(ErrorLevel.Error, ex, ex.Message);
             }
 
             if (!ok)

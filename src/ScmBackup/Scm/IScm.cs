@@ -49,17 +49,26 @@ namespace ScmBackup.Scm
         /// Pulls from a remote repository into a local folder.
         /// If the folder doesn't exist or is not a repository, it's created first.
         /// </summary>
-        void PullFromRemote(string remoteUrl, string directory);
+        string PullFromRemote(string remoteUrl, string directory);
         
         /// <summary>
         /// Pulls from a remote repository into a local folder.
         /// If the folder doesn't exist or is not a repository, it's created first.
         /// </summary>
-        void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials);
+        string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials);
 
         /// <summary>
         /// Checks whether the repo in this directory contains a commit with this ID
         /// </summary>
         bool RepositoryContainsCommit(string directory, string commitid);
+
+        /// <summary>
+        /// Pushes to remote repository.
+        /// </summary>
+        /// <param name="remoteUrl">The HTTPS URL.</param>
+        /// <param name="directory">The subdir.</param>
+        /// <param name="credentials">The creds.</param>
+        /// <returns>Output of successful command. Failed command should throw.</returns>
+        string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials);
     }
 }

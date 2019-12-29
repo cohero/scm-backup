@@ -89,7 +89,11 @@ namespace ScmBackup.Hosters.Bitbucket
                         string cloneurl = clone.href;
 
                         var repo = new HosterRepository(apiRepo.full_name, apiRepo.slug, cloneurl, type);
-
+                        repo.Name = apiRepo.name;
+                        repo.Description = apiRepo.description;
+                        repo.Size = apiRepo.size;
+                        repo.Language = apiRepo.language;
+                        
                         repo.SetPrivate(apiRepo.is_private);
 
                         if (apiRepo.has_wiki)

@@ -13,6 +13,8 @@ namespace ScmBackup.Tests.Integration.Hosters
         internal HosterRepository repo;
         internal IScm scm;
         internal ConfigSource source;
+        internal IContext context;
+        internal ILogger logger;
 
         // The child classes need to implement this *and fill all above properties there*:
         protected abstract void Setup(bool usePrivateRepo);
@@ -53,7 +55,7 @@ namespace ScmBackup.Tests.Integration.Hosters
             Assert.NotNull(this.scm);
             Assert.NotNull(this.source);
 
-            sut.MakeBackup(this.source, this.repo, dir);
+            sut.MakeBackup(this.source, this.repo, dir, this.context, this.logger);
 
             this.AssertRepo(Path.Combine(dir, this.sut.SubDirRepo));
             this.AssertWiki(Path.Combine(dir, this.sut.SubDirWiki));
@@ -70,7 +72,7 @@ namespace ScmBackup.Tests.Integration.Hosters
 
             this.Setup(true);
 
-            sut.MakeBackup(this.source, this.repo, dir);
+            sut.MakeBackup(this.source, this.repo, dir, this.context, this.logger);
 
             this.AssertPrivateRepo(Path.Combine(dir, sut.SubDirRepo));
         }
@@ -85,7 +87,7 @@ namespace ScmBackup.Tests.Integration.Hosters
 
             this.repo.SetWiki(false, null);
 
-            sut.MakeBackup(this.source, this.repo, dir);
+            sut.MakeBackup(this.source, this.repo, dir, this.context, this.logger);
 
             Assert.False(Directory.Exists(sut.SubDirWiki));
         }
@@ -100,7 +102,7 @@ namespace ScmBackup.Tests.Integration.Hosters
 
             this.repo.SetIssues(false, null);
 
-            sut.MakeBackup(this.source, this.repo, dir);
+            sut.MakeBackup(this.source, this.repo, dir, this.context, this.logger);
 
             Assert.False(Directory.Exists(sut.SubDirIssues));
         }
@@ -114,7 +116,7 @@ namespace ScmBackup.Tests.Integration.Hosters
             this.Setup(false);
             sut.scmFactory = null;
 
-            Assert.Throws<ArgumentNullException>(() => sut.MakeBackup(this.source, this.repo, dir));
+            Assert.Throws<ArgumentNullException>(() => sut.MakeBackup(this.source, this.repo, dir, this.context, this.logger));
         }
 
         /// <summary>

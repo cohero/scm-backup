@@ -106,12 +106,17 @@ namespace ScmBackup.Tests.Integration.Scm
             throw new NotImplementedException();
         }
 
-        public override void PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
+        public override string PullFromRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
             throw new NotImplementedException();
         }
 
         public override bool RepositoryContainsCommit(string directory, string commitid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string PushToRemote(string remoteUrl, string directory, ScmCredentials credentials)
         {
             throw new NotImplementedException();
         }
